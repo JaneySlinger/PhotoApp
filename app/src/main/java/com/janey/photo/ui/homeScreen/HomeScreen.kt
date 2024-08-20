@@ -1,6 +1,6 @@
 package com.janey.photo.ui.homeScreen
 
-import androidx.compose.foundation.Image
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,30 +25,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.janey.photo.R
+import com.janey.photo.network.model.Description
+import com.janey.photo.network.model.Photo
 import com.janey.photo.ui.theme.PhotoTheme
 import com.janey.photo.ui.theme.Typography
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = viewModel()
+    modifier: Modifier = Modifier, viewModel: HomeScreenViewModel = viewModel()
+) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
+    HomeScreenContent(
+        modifier = modifier,
+        photos = state.value.photos,
+        searchTerm = state.value.searchTerm
+    )
+}
+
+@Composable
+fun HomeScreenContent(
+    photos: List<Photo>, searchTerm: String, modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column {
-            TextField(
-                leadingIcon = { Icon(Icons.Outlined.Search, "") },
+            TextField(leadingIcon = { Icon(Icons.Outlined.Search, "") },
                 modifier = Modifier.fillMaxWidth(),
-                value = "Yorkshire",
-                onValueChange = {}
-            )
+                value = searchTerm,
+                onValueChange = {})
             LazyColumn() {
-                items(5) { item ->
-                    ImageItem()
+                items(photos) { photo ->
+                    ImageItem(photo)
                     HorizontalDivider()
                 }
             }
@@ -56,26 +72,41 @@ fun HomeScreen(
 }
 
 @Composable
-fun ImageItem(modifier: Modifier = Modifier) {
+fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
     Column(Modifier.padding(8.dp)) {
-        // TODO janey add content description
-        Image(
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(photo.photoUrl)
+                .crossfade(true).build(),
+            contentDescription = photo.description.contentDescription,
             contentScale = ContentScale.Crop,
+            onLoading = { },
+            onSuccess = { },
+            onError = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(4.dp)),
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = null
+            placeholder = painterResource(id = R.drawable.ic_launcher_background),
+            error = painterResource(id = R.drawable.ic_launcher_background),
+            fallback = painterResource(id = R.drawable.ic_launcher_background),
         )
-        Profile()
-        // TODO janey only display
-        Text(text = "#yorkshire #trees #moretags #tagfour #somemoretags")
+        Profile(
+            username = photo.ownerName,
+            // todo janey move
+            profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
+        )
+        // todo Janey curtail after a certain length
+        // todo janey add #s
+        Text(text = photo.tags)
     }
 }
 
 @Composable
-fun Profile(modifier: Modifier = Modifier) {
+fun Profile(
+    username: String,
+    profilePictureUrl: String,
+    modifier: Modifier = Modifier
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -83,15 +114,22 @@ fun Profile(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Image(
-            // TODO janey add content description
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(profilePictureUrl)
+                .crossfade(true).build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            onLoading = { },
+            onSuccess = { },
+            onError = { Log.d("Janey", it.result.throwable.message.toString()) },
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape),
-            painter = painterResource(id = R.drawable.ic_launcher_background),
-            contentDescription = null
+            placeholder = painterResource(id = R.drawable.ic_launcher_background),
+            error = painterResource(id = R.drawable.ic_launcher_background),
+            fallback = painterResource(id = R.drawable.ic_launcher_background),
         )
-        Text("JaneySlinger", style = Typography.bodyLarge)
+        Text(username, style = Typography.bodyLarge)
     }
 }
 
@@ -99,6 +137,42 @@ fun Profile(modifier: Modifier = Modifier) {
 @Composable
 private fun HomeScreenPreview() {
     PhotoTheme {
-        HomeScreen()
+        HomeScreenContent(
+            photos = listOf(
+                Photo(
+                    ownerId = "153873640@N02",
+                    ownerName = "Ellen Love",
+                    iconServer = "1234",
+                    iconFarm = 8574,
+                    tags = "swjuk ©swjuk uk unitedkingdom gb greatbritain england yorkshire yorkshirecoast northyorkshire harbour redcar paddyshole water sea seaside lobsterpots boats teesside bluesky clouds cloud light sunlight 2024 july2024 summer holidays nikon z50 nikonz50 nikkorzdx1650mm rawnef lightroomclassiccc",
+                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
+                    title = "eam",
+                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
+                    dateTaken = "2024-08-12 12:50:31"
+                ),
+                Photo(
+                    ownerId = "153873640@N02",
+                    ownerName = "Finn",
+                    iconServer = "1234",
+                    iconFarm = 8574,
+                    tags = "#yorkshire #trees #moretags #tagfour #somemoretags",
+                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
+                    title = "eam",
+                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
+                    dateTaken = "2024-08-12 12:50:31"
+                ),
+                Photo(
+                    ownerId = "153873640@N02",
+                    ownerName = "Bob",
+                    iconServer = "1234",
+                    iconFarm = 8574,
+                    tags = "#yorkshire #trees #moretags #tagfour #somemoretags",
+                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
+                    title = "eam",
+                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
+                    dateTaken = "2024-08-12 12:50:31"
+                )
+            ), searchTerm = "Yorkshire"
+        )
     }
 }

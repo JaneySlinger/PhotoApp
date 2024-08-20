@@ -27,8 +27,8 @@ interface FlickrApiService {
         @Query("format") format: String = "json",
         @Query("safe_search") safeSearch: Int = 1,
         @Query("text") searchText : String = "Yorkshire",
-        @Query("per_page") perPage: Int = 1,
-        @Query("extras") extras : String = "tags,url_sq,owner_name,icon_server,description,date_taken",
+        @Query("per_page") perPage: Int = 5,
+        @Query("extras") extras : String = "tags,url_m,owner_name,icon_server,description,date_taken",
     ): FlickrSearchResponse
 }
 

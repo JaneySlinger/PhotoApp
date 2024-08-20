@@ -25,8 +25,8 @@ data class Photo(
     @Json(name = "iconfarm")
     val iconFarm: Int,
     val tags: String,
-    @Json(name="url_sq")
-    val thumbnailUrl: String,
+    @Json(name="url_m")
+    val photoUrl: String,
     val title: String,
     val description: Description,
     @Json(name="datetaken")
