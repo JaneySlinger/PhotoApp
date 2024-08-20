@@ -1,3 +1,6 @@
+
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -18,6 +21,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Get the API key from apiKey.properties
+        val properties = Properties().apply {
+            file("../apiKey.properties").inputStream().use { fis ->
+                load(fis)
+            }
+        }
+
+        buildConfigField(type = "String", name="FLICKR_API_KEY", value = properties["FLICKR_API_KEY"] as String)
+        buildConfigField(type = "String", name="FLICKR_BASE_URL", value = "\"www.flickr.com/services/rest/\"")
     }
 
     buildTypes {
@@ -38,6 +51,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -66,4 +80,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // network
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.converter.moshi)
+    implementation(libs.coil.compose)
 }
