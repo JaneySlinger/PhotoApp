@@ -27,12 +27,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.janey.photo.R
 import com.janey.photo.ui.theme.PhotoTheme
 import com.janey.photo.ui.theme.Typography
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeScreenViewModel = viewModel()
+) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column {
             TextField(
