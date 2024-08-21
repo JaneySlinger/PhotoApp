@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.HorizontalDivider
@@ -26,7 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -47,21 +51,42 @@ fun HomeScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     HomeScreenContent(
-        modifier = modifier, photos = state.value.photos, searchTerm = state.value.searchTerm
+        modifier = modifier, photos = state.value.photos, searchTerm = state.value.searchTerm,
+        onSearchTermUpdated = {
+            viewModel.handleEvent(
+                HomeEvent.SearchFieldUpdated(
+                    it
+                )
+            )
+        },
+        onSearchClicked = { viewModel.handleEvent(HomeEvent.SearchClicked) }
     )
 }
 
 @Composable
 fun HomeScreenContent(
-    photos: List<Photo>, searchTerm: String, modifier: Modifier = Modifier
+    photos: List<Photo>,
+    searchTerm: String,
+    onSearchTermUpdated: (String) -> Unit,
+    onSearchClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+
     Surface(modifier = modifier.fillMaxSize()) {
         Column {
-            TextField(leadingIcon = { Icon(Icons.Outlined.Search, "") },
+            TextField(
+                leadingIcon = { Icon(Icons.Outlined.Search, "") },
                 modifier = Modifier.fillMaxWidth(),
                 value = searchTerm,
-                onValueChange = {})
-            LazyColumn() {
+                onValueChange = { onSearchTermUpdated(it) },
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = {
+                    onSearchClicked()
+                    focusManager.clearFocus()
+                }),
+            )
+            LazyColumn {
                 items(photos) { photo ->
                     ImageItem(photo)
                     HorizontalDivider()
@@ -95,7 +120,9 @@ fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
             // todo janey move
             profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
         )
-        Text(text = photo.tags.formatTags(), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        if(photo.tags.isNotBlank()) {
+            Text(text = photo.tags.formatTags(), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        }
     }
 }
 
@@ -150,7 +177,7 @@ private fun HomeScreenPreview() {
                     ownerName = "Finn",
                     iconServer = "1234",
                     iconFarm = 8574,
-                    tags = "yorkshire trees moretags tagfour somemoretags",
+                    tags = "",
                     photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
                     title = "eam",
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
@@ -166,7 +193,9 @@ private fun HomeScreenPreview() {
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
                 )
-            ), searchTerm = "Yorkshire"
+            ), searchTerm = "Yorkshire",
+            onSearchTermUpdated = { _ -> },
+            onSearchClicked = {}
         )
     }
 }

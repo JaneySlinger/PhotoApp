@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 interface PhotoRepository {
     suspend fun searchPhotos(searchTerm: String)
-    suspend fun subscribe(): Flow<PhotoData?>
+    fun subscribe(): Flow<PhotoData?>
 }
 
 class PhotoRepositoryImpl @Inject constructor() : PhotoRepository {
@@ -25,6 +25,6 @@ class PhotoRepositoryImpl @Inject constructor() : PhotoRepository {
         }
     }
 
-    override suspend fun subscribe(): StateFlow<PhotoData?> = photoFlow.asStateFlow()
+    override fun subscribe(): StateFlow<PhotoData?> = photoFlow.asStateFlow()
 
 }

@@ -3,6 +3,7 @@ package com.janey.photo
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
+import com.janey.photo.ui.homeScreen.HomeEvent
 import com.janey.photo.ui.homeScreen.HomeScreenViewModel
 import com.janey.photo.ui.homeScreen.HomeState
 import junit.framework.Assert.assertEquals
@@ -42,23 +43,38 @@ class HomeScreenViewModelTest {
 
         advanceUntilIdle()
 
-        assertEquals(HomeState(photos = photoList, searchTerm = "Yorkshire"), sut.state.value)
+        assertEquals(HomeState(photos = getSamplePhotoList(), searchTerm = "Yorkshire"), sut.state.value)
     }
 
-    companion object {
-        val photoList = listOf(
-            Photo(
-                ownerId = "tortor",
-                ownerName = "Eliza Dudley",
-                iconServer = "omnesque",
-                iconFarm = 4598,
-                tags = "senectus",
-                photoUrl = "https://www.google.com/#q=similique",
-                title = "mei",
-                description = Description(contentDescription = "moderatius"),
-                dateTaken = "expetendis"
-            )
-        )
+    @Test
+    fun`when search term is updated, state is updated`() = runTest(testDispatcher) {
+        sut.handleEvent(HomeEvent.SearchFieldUpdated("Test"))
+
+        assertEquals("Test", sut.state.value.searchTerm)
     }
+
+    @Test
+    fun `given search term has been updated, when search is clicked, new photos are loaded`() = runTest(testDispatcher) {
+        sut.handleEvent(HomeEvent.SearchFieldUpdated("Test"))
+        sut.handleEvent(HomeEvent.SearchClicked)
+
+        advanceUntilIdle()
+
+        assertEquals(HomeState(photos = getSamplePhotoList("Test"), searchTerm = "Test"), sut.state.value)
+    }
+
+    private fun getSamplePhotoList(searchTerm: String = "Yorkshire") = listOf(
+        Photo(
+            ownerId = "tortor",
+            ownerName = searchTerm,
+            iconServer = "omnesque",
+            iconFarm = 4598,
+            tags = "senectus",
+            photoUrl = "https://www.google.com/#q=similique",
+            title = "mei",
+            description = Description(contentDescription = "moderatius"),
+            dateTaken = "expetendis"
+        )
+    )
 
 }

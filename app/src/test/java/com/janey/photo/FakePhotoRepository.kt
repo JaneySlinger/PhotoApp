@@ -17,7 +17,7 @@ class FakePhotoRepository : PhotoRepository {
                 photos = listOf(
                     Photo(
                         ownerId = "tortor",
-                        ownerName = "Eliza Dudley",
+                        ownerName = searchTerm,
                         iconServer = "omnesque",
                         iconFarm = 4598,
                         tags = "senectus",
@@ -34,5 +34,5 @@ class FakePhotoRepository : PhotoRepository {
         }
     }
 
-    override suspend fun subscribe(): Flow<PhotoData?> = photoFlow.asStateFlow()
+    override fun subscribe(): Flow<PhotoData?> = photoFlow.asStateFlow()
 }
