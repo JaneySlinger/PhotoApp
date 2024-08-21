@@ -101,6 +101,10 @@ dependencies {
 
     // coil image loading
     implementation(libs.coil.compose.v270)
+
+    //mockito
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
 }
 
 kapt {
