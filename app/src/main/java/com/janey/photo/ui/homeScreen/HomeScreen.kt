@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +39,7 @@ import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
 import com.janey.photo.ui.theme.PhotoTheme
 import com.janey.photo.ui.theme.Typography
+import com.janey.photo.utils.formatTags
 
 @Composable
 fun HomeScreen(
@@ -45,9 +47,7 @@ fun HomeScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     HomeScreenContent(
-        modifier = modifier,
-        photos = state.value.photos,
-        searchTerm = state.value.searchTerm
+        modifier = modifier, photos = state.value.photos, searchTerm = state.value.searchTerm
     )
 }
 
@@ -75,8 +75,8 @@ fun HomeScreenContent(
 fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
     Column(Modifier.padding(8.dp)) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current).data(photo.photoUrl)
-                .crossfade(true).build(),
+            model = ImageRequest.Builder(LocalContext.current).data(photo.photoUrl).crossfade(true)
+                .build(),
             contentDescription = photo.description.contentDescription,
             contentScale = ContentScale.Crop,
             onLoading = { },
@@ -95,17 +95,13 @@ fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
             // todo janey move
             profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
         )
-        // todo Janey curtail after a certain length
-        // todo janey add #s
-        Text(text = photo.tags)
+        Text(text = photo.tags.formatTags(), maxLines = 2, overflow = TextOverflow.Ellipsis)
     }
 }
 
 @Composable
 fun Profile(
-    username: String,
-    profilePictureUrl: String,
-    modifier: Modifier = Modifier
+    username: String, profilePictureUrl: String, modifier: Modifier = Modifier
 ) {
     Row(
         Modifier
@@ -149,24 +145,22 @@ private fun HomeScreenPreview() {
                     title = "eam",
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
-                ),
-                Photo(
+                ), Photo(
                     ownerId = "153873640@N02",
                     ownerName = "Finn",
                     iconServer = "1234",
                     iconFarm = 8574,
-                    tags = "#yorkshire #trees #moretags #tagfour #somemoretags",
+                    tags = "yorkshire trees moretags tagfour somemoretags",
                     photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
                     title = "eam",
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
-                ),
-                Photo(
+                ), Photo(
                     ownerId = "153873640@N02",
                     ownerName = "Bob",
                     iconServer = "1234",
                     iconFarm = 8574,
-                    tags = "#yorkshire #trees #moretags #tagfour #somemoretags",
+                    tags = "yorkshire trees moretags tagfour somemoretags",
                     photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
                     title = "eam",
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
