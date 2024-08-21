@@ -1,6 +1,11 @@
+
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -18,6 +23,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Get the API key from apiKey.properties
+        val properties = Properties().apply {
+            file("../apiKey.properties").inputStream().use { fis ->
+                load(fis)
+            }
+        }
+
+        buildConfigField(type = "String", name="FLICKR_API_KEY", value = properties["FLICKR_API_KEY"] as String)
+        buildConfigField(type = "String", name="FLICKR_BASE_URL", value = "\"www.flickr.com/services/rest/\"")
     }
 
     buildTypes {
@@ -38,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -55,6 +71,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.lifecycle.compose.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -66,4 +84,29 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // network
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.moshi.kotlin)
+    implementation(libs.converter.moshi)
+    implementation(libs.coil.compose)
+
+    // hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // coil image loading
+    implementation(libs.coil.compose.v270)
+
+    //mockito
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+}
+
+kapt {
+    correctErrorTypes = true
 }
