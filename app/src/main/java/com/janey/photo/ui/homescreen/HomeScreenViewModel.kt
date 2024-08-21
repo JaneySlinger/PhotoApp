@@ -1,4 +1,4 @@
-package com.janey.photo.ui.homeScreen
+package com.janey.photo.ui.homescreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

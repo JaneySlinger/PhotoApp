@@ -1,4 +1,4 @@
-package com.janey.photo.ui.homeScreen
+package com.janey.photo.ui.homescreen
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement

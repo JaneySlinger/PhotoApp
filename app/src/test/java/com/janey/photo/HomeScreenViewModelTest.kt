@@ -3,9 +3,9 @@ package com.janey.photo
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
-import com.janey.photo.ui.homeScreen.HomeEvent
-import com.janey.photo.ui.homeScreen.HomeScreenViewModel
-import com.janey.photo.ui.homeScreen.HomeState
+import com.janey.photo.ui.homescreen.HomeEvent
+import com.janey.photo.ui.homescreen.HomeScreenViewModel
+import com.janey.photo.ui.homescreen.HomeState
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
