@@ -1,6 +1,7 @@
 package com.janey.photo.ui.homescreen
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,11 +48,14 @@ import com.janey.photo.utils.formatTags
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier, viewModel: HomeScreenViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    onImageClicked: () -> Unit,
+    viewModel: HomeScreenViewModel = viewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     HomeScreenContent(
         modifier = modifier, photos = state.value.photos, searchTerm = state.value.searchTerm,
+        onImageClicked = onImageClicked,
         onSearchTermUpdated = {
             viewModel.handleEvent(
                 HomeEvent.SearchFieldUpdated(
@@ -67,6 +71,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     photos: List<Photo>,
     searchTerm: String,
+    onImageClicked: () -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onSearchClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -88,7 +93,7 @@ fun HomeScreenContent(
             )
             LazyColumn {
                 items(photos) { photo ->
-                    ImageItem(photo)
+                    ImageItem(photo, onImageClicked)
                     HorizontalDivider()
                 }
             }
@@ -97,7 +102,11 @@ fun HomeScreenContent(
 }
 
 @Composable
-fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
+fun ImageItem(
+    photo: Photo,
+    onImageClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(Modifier.padding(8.dp)) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current).data(photo.photoUrl).crossfade(true)
@@ -108,6 +117,7 @@ fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
             onSuccess = { },
             onError = { },
             modifier = Modifier
+                .clickable { onImageClicked() }
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(4.dp)),
@@ -120,7 +130,7 @@ fun ImageItem(photo: Photo, modifier: Modifier = Modifier) {
             // todo janey move
             profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
         )
-        if(photo.tags.isNotBlank()) {
+        if (photo.tags.isNotBlank()) {
             Text(text = photo.tags.formatTags(), maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
     }
@@ -195,7 +205,8 @@ private fun HomeScreenPreview() {
                 )
             ), searchTerm = "Yorkshire",
             onSearchTermUpdated = { _ -> },
-            onSearchClicked = {}
+            onSearchClicked = {},
+            onImageClicked = {},
         )
     }
 }
