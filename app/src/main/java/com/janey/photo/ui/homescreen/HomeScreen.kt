@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -94,7 +95,9 @@ fun HomeScreenContent(
         Column {
             TextField(
                 leadingIcon = { Icon(Icons.Outlined.Search, "") },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("SearchField"),
                 value = searchTerm,
                 onValueChange = { onSearchTermUpdated(it) },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
@@ -140,9 +143,11 @@ fun ImageItem(
         )
         Profile(
             username = photo.ownerName,
-            modifier = Modifier.clickable {
-                onUserClicked(photo.ownerName, photo.ownerId)
-            },
+            modifier = Modifier
+                .testTag("Profile")
+                .clickable {
+                    onUserClicked(photo.ownerName, photo.ownerId)
+                },
             profilePictureUrl = formatProfileUrl(photo.iconFarm, photo.iconServer, photo.ownerId)
         )
         if (photo.tags.isNotBlank()) {
@@ -228,7 +233,7 @@ private fun HomeScreenPreview() {
             onSearchTermUpdated = { _ -> },
             onSearchClicked = {},
             onImageClicked = {},
-            onUserClicked = {_, _ ->},
+            onUserClicked = { _, _ -> },
         )
     }
 }
