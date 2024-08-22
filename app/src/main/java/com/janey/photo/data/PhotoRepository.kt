@@ -4,6 +4,7 @@ import android.util.Log
 import com.janey.photo.network.FlickrApi
 import com.janey.photo.network.model.Photo
 import com.janey.photo.network.model.PhotoData
+import com.janey.photo.network.model.SearchType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 interface PhotoRepository {
-    suspend fun searchPhotos(searchTerm: String)
+    suspend fun searchPhotos(searchType: SearchType)
     suspend fun getPhotoById(id: String): Photo
     fun subscribe(): Flow<PhotoData?>
 }
@@ -24,11 +25,18 @@ class PhotoRepositoryImpl @Inject constructor() : PhotoRepository {
         return cachedPhotos.firstOrNull { photo -> photo.id == id } ?: TODO()
     }
 
-    override suspend fun searchPhotos(searchTerm: String) {
+    override suspend fun searchPhotos(searchType: SearchType) {
         try {
-            val photoData = FlickrApi.retrofitService.getImageBySearch(searchText = searchTerm).photoData
+            val photoData = when (searchType) {
+                is SearchType.Tag -> FlickrApi.retrofitService.getImageBySearch(
+                    tags = searchType.tags,
+                    tagMode = searchType.tagType.name
+                ).photoData
+
+                is SearchType.Term -> FlickrApi.retrofitService.getImageBySearch(searchText = searchType.searchTerm).photoData
+                is SearchType.User -> FlickrApi.retrofitService.getImageBySearch(userId = searchType.userId).photoData
+            }
             cachedPhotos.addAll(photoData.photos)
-            Log.d("Janey", "Cache size: ${cachedPhotos.size}")
             photoFlow.update { photoData }
         } catch (e: Exception) {
             e.message?.let { Log.d("Janey", it) }

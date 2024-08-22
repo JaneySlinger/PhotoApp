@@ -65,6 +65,14 @@ fun HomeScreen(
                 )
             )
         },
+        onUserClicked = { userName, userId ->
+            viewModel.handleEvent(
+                HomeEvent.UserClicked(
+                    userName,
+                    userId
+                )
+            )
+        },
         onSearchClicked = { viewModel.handleEvent(HomeEvent.SearchClicked) }
     )
 }
@@ -75,6 +83,7 @@ fun HomeScreenContent(
     searchTerm: String,
     onImageClicked: (String) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
+    onUserClicked: (String, String) -> Unit,
     onSearchClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -95,7 +104,7 @@ fun HomeScreenContent(
             )
             LazyColumn {
                 items(photos) { photo ->
-                    ImageItem(photo, onImageClicked)
+                    ImageItem(photo, onImageClicked, onUserClicked)
                     HorizontalDivider()
                 }
             }
@@ -107,6 +116,7 @@ fun HomeScreenContent(
 fun ImageItem(
     photo: Photo,
     onImageClicked: (String) -> Unit,
+    onUserClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(Modifier.padding(8.dp)) {
@@ -129,6 +139,9 @@ fun ImageItem(
         )
         Profile(
             username = photo.ownerName,
+            modifier = Modifier.clickable {
+                onUserClicked(photo.ownerName, photo.ownerId)
+            },
             // todo janey move
             profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
         )
@@ -140,10 +153,12 @@ fun ImageItem(
 
 @Composable
 fun Profile(
-    username: String, profilePictureUrl: String, modifier: Modifier = Modifier
+    username: String,
+    profilePictureUrl: String,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        Modifier
+        modifier
             .fillMaxWidth()
             .padding(top = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -213,6 +228,7 @@ private fun HomeScreenPreview() {
             onSearchTermUpdated = { _ -> },
             onSearchClicked = {},
             onImageClicked = {},
+            onUserClicked = {_, _ ->},
         )
     }
 }

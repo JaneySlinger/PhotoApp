@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Photo
+import com.janey.photo.network.model.SearchType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -23,7 +24,7 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            photoRepository.searchPhotos(state.value.searchTerm)
+            photoRepository.searchPhotos(SearchType.Term(state.value.searchTerm))
 
         }
         photoRepository.subscribe().onEach {
@@ -33,10 +34,18 @@ class HomeScreenViewModel @Inject constructor(
 
     fun handleEvent(event: HomeEvent){
         when(event){
-            HomeEvent.SearchClicked -> viewModelScope.launch {
-                photoRepository.searchPhotos(state.value.searchTerm)
-            }
+            HomeEvent.SearchClicked -> getPhotos(SearchType.Term(state.value.searchTerm))
             is HomeEvent.SearchFieldUpdated -> update(state.value.copy(searchTerm = event.searchTerm))
+            is HomeEvent.UserClicked -> {
+                update(state.value.copy(searchTerm = "@${event.username}"))
+                getPhotos(SearchType.User(event.userId))
+            }
+        }
+    }
+
+    private fun getPhotos(searchType: SearchType) {
+        viewModelScope.launch {
+            photoRepository.searchPhotos(searchType)
         }
     }
 }
@@ -46,7 +55,8 @@ data class HomeState(
     val searchTerm: String = "Yorkshire",
 )
 
-sealed class HomeEvent() {
+sealed class HomeEvent {
     data class SearchFieldUpdated(val searchTerm: String) : HomeEvent()
+    data class UserClicked(val username: String, val userId: String) : HomeEvent()
     data object SearchClicked : HomeEvent()
 }
