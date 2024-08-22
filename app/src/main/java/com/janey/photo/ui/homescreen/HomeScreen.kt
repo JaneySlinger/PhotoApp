@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -38,6 +37,9 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.janey.photo.R
@@ -55,11 +57,13 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = viewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
+    val photosPagingItems = viewModel.photos.collectAsLazyPagingItems()
     HomeScreenContent(
         modifier = modifier,
-        photos = state.value.photos,
+        photosPagingItems = photosPagingItems,
         searchTerm = state.value.searchTerm,
         onImageClicked = onImageClicked,
+        onNavigateClicked = {viewModel.handleEvent(HomeEvent.ImageClicked(it))},
         onSearchTermUpdated = {
             viewModel.handleEvent(
                 HomeEvent.SearchFieldUpdated(
@@ -81,9 +85,10 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    photos: List<Photo>,
+    photosPagingItems: LazyPagingItems<Photo>?,
     searchTerm: String,
     onImageClicked: (String) -> Unit,
+    onNavigateClicked: (Photo) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onUserClicked: (String, String) -> Unit,
     onSearchClicked: () -> Unit,
@@ -106,10 +111,33 @@ fun HomeScreenContent(
                     focusManager.clearFocus()
                 }),
             )
-            LazyColumn {
-                items(photos) { photo ->
-                    ImageItem(photo, onImageClicked, onUserClicked)
-                    HorizontalDivider()
+
+            photosPagingItems?.let {
+                LazyColumn {
+                    items(photosPagingItems.itemCount) { index ->
+                        ImageItem(
+                            photosPagingItems[index]!!,
+                            onImageClicked,
+                            onNavigateClicked,
+                            onUserClicked
+                        )
+                        HorizontalDivider()
+                    }
+                    photosPagingItems.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading -> {
+                                item {
+                                    Text("Loading")
+                                }
+                            }
+
+                            loadState.refresh is LoadState.Error || loadState.append is LoadState.Error -> {
+                                item {
+                                    Text("Error")
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -120,8 +148,8 @@ fun HomeScreenContent(
 fun ImageItem(
     photo: Photo,
     onImageClicked: (String) -> Unit,
+    onNavigateClicked: (Photo) -> Unit,
     onUserClicked: (String, String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(Modifier.padding(8.dp)) {
         AsyncImage(
@@ -133,7 +161,10 @@ fun ImageItem(
             onSuccess = { },
             onError = { },
             modifier = Modifier
-                .clickable { onImageClicked(photo.id) }
+                .clickable {
+                    onNavigateClicked(photo)
+                    onImageClicked(photo.id)
+                }
                 .fillMaxWidth()
                 .height(200.dp)
                 .testTag("Image")
@@ -193,47 +224,49 @@ fun Profile(
 private fun HomeScreenPreview() {
     PhotoTheme {
         HomeScreenContent(
-            photos = listOf(
-                Photo(
-                    id = "1",
-                    ownerId = "153873640@N02",
-                    ownerName = "Ellen Love",
-                    iconServer = "1234",
-                    iconFarm = 8574,
-                    tags = "swjuk ©swjuk uk unitedkingdom gb greatbritain england yorkshire yorkshirecoast northyorkshire harbour redcar paddyshole water sea seaside lobsterpots boats teesside bluesky clouds cloud light sunlight 2024 july2024 summer holidays nikon z50 nikonz50 nikkorzdx1650mm rawnef lightroomclassiccc",
-                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
-                    title = "eam",
-                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
-                    dateTaken = "2024-08-12 12:50:31"
-                ), Photo(
-                    id = "2",
-                    ownerId = "153873640@N02",
-                    ownerName = "Finn",
-                    iconServer = "1234",
-                    iconFarm = 8574,
-                    tags = "",
-                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
-                    title = "eam",
-                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
-                    dateTaken = "2024-08-12 12:50:31"
-                ), Photo(
-                    id = "3",
-                    ownerId = "153873640@N02",
-                    ownerName = "Bob",
-                    iconServer = "1234",
-                    iconFarm = 8574,
-                    tags = "yorkshire trees moretags tagfour somemoretags",
-                    photoUrl = "https://live.staticflickr.com/65535/53936023219_558928a4c7_s.jpg",
-                    title = "eam",
-                    description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
-                    dateTaken = "2024-08-12 12:50:31"
-                )
-            ),
             searchTerm = "Yorkshire",
             onSearchTermUpdated = { _ -> },
             onSearchClicked = {},
             onImageClicked = {},
             onUserClicked = { _, _ -> },
+            photosPagingItems = null,
+            onNavigateClicked = {},
         )
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ProfilePreview() {
+    PhotoTheme {
+        Surface {
+            Profile(username = "Username", profilePictureUrl = "testUrl")
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun ImageItemPreview() {
+    PhotoTheme {
+        Surface {
+            ImageItem(
+                photo = Photo(
+                    id = "1",
+                    ownerId = "tortor",
+                    ownerName = "Owner",
+                    iconServer = "omnesque",
+                    iconFarm = 4598,
+                    tags = "tag1 tag2 tag3",
+                    photoUrl = "https://www.google.com/#q=similique",
+                    title = "mei",
+                    description = Description(contentDescription = "moderatius"),
+                    dateTaken = "expetendis"
+                ),
+                onImageClicked = {},
+                onNavigateClicked = {},
+                onUserClicked = {_, _ ->},
+            )
+        }
     }
 }

@@ -25,19 +25,22 @@ class DetailScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val photo = photoRepository.getPhotoById(id)
-            update(state.value.copy(
-                url = photo.photoUrl,
-                description = photo.description.contentDescription,
-                title = photo.title,
-                dateTaken = photo.dateTaken,
-                userName = photo.ownerName,
-                profileUrl = formatProfileUrl(photo.iconFarm, photo.iconServer, photo.ownerId),
-                tags = photo.tags,
-            ))
+            photo?.let {
+                update(state.value.copy(
+                    url = photo.photoUrl,
+                    description = photo.description.contentDescription,
+                    title = photo.title,
+                    dateTaken = photo.dateTaken,
+                    userName = photo.ownerName,
+                    profileUrl = formatProfileUrl(photo.iconFarm, photo.iconServer, photo.ownerId),
+                    tags = photo.tags,
+                ))
+            }
+            photoRepository.clearCache()
+            // todo update with error state/loading state
         }
     }
 }
-
 data class DetailState(
     val url: String = "",
     val description: String = "",

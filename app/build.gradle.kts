@@ -107,6 +107,12 @@ dependencies {
     //mockito
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
+
+    // jetpack paging library
+    implementation(libs.androidx.paging.runtime)
+    testImplementation(libs.androidx.paging.common)
+    implementation(libs.androidx.paging.compose)
+
 }
 
 kapt {
