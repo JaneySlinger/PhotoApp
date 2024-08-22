@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.janey.photo.data.PhotoRepository
+import com.janey.photo.utils.formatProfileUrl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class DetailScreenViewModel @Inject constructor(
                 title = photo.title,
                 dateTaken = photo.dateTaken,
                 userName = photo.ownerName,
-                profileUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg",
+                profileUrl = formatProfileUrl(photo.iconFarm, photo.iconServer, photo.ownerId),
                 tags = photo.tags,
             ))
         }

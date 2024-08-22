@@ -1,6 +1,5 @@
-package com.janey.photo
+package com.janey.photo.data
 
-import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
 import com.janey.photo.network.model.PhotoData
@@ -17,7 +16,7 @@ class FakePhotoRepository : PhotoRepository {
         ownerName = "Owner",
         iconServer = "omnesque",
         iconFarm = 4598,
-        tags = "senectus",
+        tags = "tag1 tag2 tag3",
         photoUrl = "https://www.google.com/#q=similique",
         title = "mei",
         description = Description(contentDescription = "moderatius"),

@@ -44,6 +44,7 @@ import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
 import com.janey.photo.ui.theme.PhotoTheme
 import com.janey.photo.ui.theme.Typography
+import com.janey.photo.utils.formatProfileUrl
 import com.janey.photo.utils.formatTags
 
 @Composable
@@ -142,8 +143,7 @@ fun ImageItem(
             modifier = Modifier.clickable {
                 onUserClicked(photo.ownerName, photo.ownerId)
             },
-            // todo janey move
-            profilePictureUrl = "https://farm${photo.iconFarm}.staticflickr.com/${photo.iconServer}/buddyicons/${photo.ownerId}.jpg"
+            profilePictureUrl = formatProfileUrl(photo.iconFarm, photo.iconServer, photo.ownerId)
         )
         if (photo.tags.isNotBlank()) {
             Text(text = photo.tags.formatTags(), maxLines = 2, overflow = TextOverflow.Ellipsis)

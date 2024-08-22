@@ -1,5 +1,6 @@
-package com.janey.photo
+package com.janey.photo.ui
 
+import com.janey.photo.data.FakePhotoRepository
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
@@ -65,6 +66,7 @@ class HomeScreenViewModelTest {
 
     private fun getSamplePhotoList(searchTerm: String = "Yorkshire") = listOf(
         Photo(
+            id = "1",
             ownerId = "tortor",
             ownerName = searchTerm,
             iconServer = "omnesque",
