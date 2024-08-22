@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -42,7 +43,7 @@ fun DetailScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     DetailScreenContent(
-        modifier = modifier,
+        modifier = modifier.testTag("DetailScreen"),
         url = state.value.url,
         description = state.value.description,
         title = state.value.title,

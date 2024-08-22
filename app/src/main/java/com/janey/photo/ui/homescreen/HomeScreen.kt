@@ -136,6 +136,7 @@ fun ImageItem(
                 .clickable { onImageClicked(photo.id) }
                 .fillMaxWidth()
                 .height(200.dp)
+                .testTag("Image")
                 .clip(RoundedCornerShape(4.dp)),
             placeholder = painterResource(id = R.drawable.ic_launcher_background),
             error = painterResource(id = R.drawable.ic_launcher_background),
@@ -144,7 +145,6 @@ fun ImageItem(
         Profile(
             username = photo.ownerName,
             modifier = Modifier
-                .testTag("Profile")
                 .clickable {
                     onUserClicked(photo.ownerName, photo.ownerId)
                 },
