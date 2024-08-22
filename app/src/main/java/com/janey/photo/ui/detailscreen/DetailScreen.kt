@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.janey.photo.R
@@ -34,12 +36,16 @@ import com.janey.photo.ui.theme.Typography
 import com.janey.photo.utils.formatTags
 
 @Composable
-fun DetailScreen(modifier: Modifier = Modifier) {
+fun DetailScreen(
+    modifier: Modifier = Modifier,
+    viewModel: DetailScreenViewModel = viewModel()
+) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
     DetailScreenContent(
         modifier = modifier,
         url = "https://duckduckgo.com/?q=noster",
         description = "eos",
-        title = "vix",
+        title = state.value.id,
         dateTaken = "partiendo",
         userName = "Michel Lynn",
         profileUrl = "http://www.bing.com/search?q=hendrerit",

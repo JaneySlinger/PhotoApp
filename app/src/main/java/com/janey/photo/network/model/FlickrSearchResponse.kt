@@ -16,6 +16,7 @@ data class PhotoData(
 )
 
 data class Photo(
+    val id: String,
     @Json(name = "owner")
     val ownerId: String,
     @Json(name = "ownername")

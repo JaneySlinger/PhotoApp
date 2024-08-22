@@ -49,7 +49,7 @@ import com.janey.photo.utils.formatTags
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    onImageClicked: () -> Unit,
+    onImageClicked: (String) -> Unit,
     viewModel: HomeScreenViewModel = viewModel()
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -71,7 +71,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     photos: List<Photo>,
     searchTerm: String,
-    onImageClicked: () -> Unit,
+    onImageClicked: (String) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
     onSearchClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -104,7 +104,7 @@ fun HomeScreenContent(
 @Composable
 fun ImageItem(
     photo: Photo,
-    onImageClicked: () -> Unit,
+    onImageClicked: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(Modifier.padding(8.dp)) {
@@ -117,7 +117,7 @@ fun ImageItem(
             onSuccess = { },
             onError = { },
             modifier = Modifier
-                .clickable { onImageClicked() }
+                .clickable { onImageClicked(photo.id) }
                 .fillMaxWidth()
                 .height(200.dp)
                 .clip(RoundedCornerShape(4.dp)),
@@ -173,6 +173,7 @@ private fun HomeScreenPreview() {
         HomeScreenContent(
             photos = listOf(
                 Photo(
+                    id = "1",
                     ownerId = "153873640@N02",
                     ownerName = "Ellen Love",
                     iconServer = "1234",
@@ -183,6 +184,7 @@ private fun HomeScreenPreview() {
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
                 ), Photo(
+                    id = "2",
                     ownerId = "153873640@N02",
                     ownerName = "Finn",
                     iconServer = "1234",
@@ -193,6 +195,7 @@ private fun HomeScreenPreview() {
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
                 ), Photo(
+                    id = "3",
                     ownerId = "153873640@N02",
                     ownerName = "Bob",
                     iconServer = "1234",

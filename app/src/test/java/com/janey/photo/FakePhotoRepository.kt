@@ -16,6 +16,7 @@ class FakePhotoRepository : PhotoRepository {
             PhotoData(
                 photos = listOf(
                     Photo(
+                        id = "1",
                         ownerId = "tortor",
                         ownerName = searchTerm,
                         iconServer = "omnesque",
