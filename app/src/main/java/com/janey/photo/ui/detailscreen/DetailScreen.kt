@@ -43,13 +43,13 @@ fun DetailScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     DetailScreenContent(
         modifier = modifier,
-        url = "https://duckduckgo.com/?q=noster",
-        description = "eos",
-        title = state.value.id,
-        dateTaken = "partiendo",
-        userName = "Michel Lynn",
-        profileUrl = "http://www.bing.com/search?q=hendrerit",
-        tags = "tag1 tag2 tag3 tag4"
+        url = state.value.url,
+        description = state.value.description,
+        title = state.value.title,
+        dateTaken = state.value.dateTaken,
+        userName = state.value.userName,
+        profileUrl = state.value.profileUrl,
+        tags = state.value.tags,
     )
 }
 
@@ -103,13 +103,15 @@ fun DetailScreenContent(
                     modifier = Modifier.padding(top = 4.dp)
                         .fillMaxWidth()
                 )
-                Text(
-                    tags.formatTags(),
-                    style = Typography.bodyLarge,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .fillMaxWidth()
-                )
+                if(tags.isNotBlank()) {
+                    Text(
+                        tags.formatTags(),
+                        style = Typography.bodyLarge,
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .fillMaxWidth()
+                    )
+                }
             }
         }
     }

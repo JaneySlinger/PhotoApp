@@ -3,7 +3,8 @@ package com.janey.photo.network.model
 import com.squareup.moshi.Json
 
 data class FlickrSearchResponse(
-    val photos: PhotoData
+    @Json(name = "photos")
+    val photoData: PhotoData
 )
 
 data class PhotoData(

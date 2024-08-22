@@ -54,7 +54,9 @@ fun HomeScreen(
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
     HomeScreenContent(
-        modifier = modifier, photos = state.value.photos, searchTerm = state.value.searchTerm,
+        modifier = modifier,
+        photos = state.value.photos,
+        searchTerm = state.value.searchTerm,
         onImageClicked = onImageClicked,
         onSearchTermUpdated = {
             viewModel.handleEvent(
@@ -206,7 +208,8 @@ private fun HomeScreenPreview() {
                     description = Description(contentDescription = "Providing the motive power for the North Yorkshire Moors heritage railway's service over mainline metals to Whitby was class 25 D7628 'Sybilla'."),
                     dateTaken = "2024-08-12 12:50:31"
                 )
-            ), searchTerm = "Yorkshire",
+            ),
+            searchTerm = "Yorkshire",
             onSearchTermUpdated = { _ -> },
             onSearchClicked = {},
             onImageClicked = {},
