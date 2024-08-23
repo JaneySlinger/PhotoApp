@@ -92,7 +92,6 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
     implementation(libs.moshi.kotlin)
     implementation(libs.converter.moshi)
-    implementation(libs.coil.compose)
 
     // hilt
     implementation(libs.hilt.android)
@@ -104,7 +103,7 @@ dependencies {
     kaptAndroidTest(libs.hilt.android.compiler)
 
     // coil image loading
-    implementation(libs.coil.compose.v270)
+    implementation(libs.coil.compose)
 
     //mockito
     testImplementation(libs.mockito.core)
