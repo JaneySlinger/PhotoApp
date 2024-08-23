@@ -22,12 +22,19 @@ class PhotoPagingSource @Inject constructor(
             val currentPage = params.key ?: 1
             val photoData = when (searchType) {
                 is SearchType.Tag -> flickrApiService.getImageBySearch(
+                    page = currentPage,
                     tags = searchType.tags,
                     tagMode = searchType.tagType.value
                 ).photoData
 
-                is SearchType.Term -> flickrApiService.getImageBySearch(searchText = searchType.searchTerm).photoData
-                is SearchType.User -> flickrApiService.getImageBySearch(userId = searchType.userId).photoData
+                is SearchType.Term -> flickrApiService.getImageBySearch(
+                    page = currentPage,
+                    searchText = searchType.searchTerm
+                ).photoData
+                is SearchType.User -> flickrApiService.getImageBySearch(
+                    page = currentPage,
+                    userId = searchType.userId
+                ).photoData
             }
             val maxPages = photoData.pages
             val perPage = photoData.perPage
