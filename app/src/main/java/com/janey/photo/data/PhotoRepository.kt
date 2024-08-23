@@ -1,5 +1,6 @@
 package com.janey.photo.data
 
+import androidx.annotation.VisibleForTesting
 import androidx.paging.PagingSource
 import com.janey.photo.network.model.Photo
 import com.janey.photo.network.model.SearchType
@@ -13,7 +14,8 @@ interface PhotoRepository {
 }
 
 class PhotoRepositoryImpl @Inject constructor() : PhotoRepository {
-    private val cachedPhotos: MutableList<Photo> = mutableListOf()
+    @VisibleForTesting
+    val cachedPhotos: MutableList<Photo> = mutableListOf()
     override fun getPhotoById(id: String): Photo? {
         return cachedPhotos.firstOrNull { photo -> photo.id == id }
     }
