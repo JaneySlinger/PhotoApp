@@ -36,7 +36,6 @@ class DetailScreenViewModel @Inject constructor(
             )
         }
         photoRepository.clearCache()
-        // todo update with error state/loading state
     }
 }
 
@@ -44,7 +43,7 @@ data class DetailState(
     val url: String = "",
     val description: String = "",
     val title: String = "",
-    val dateTaken: String = "", //TODO swap to date
+    val dateTaken: String = "",
     val userName: String = "",
     val profileUrl: String = "",
     val tags: String = "",
