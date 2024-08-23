@@ -23,7 +23,7 @@ class PhotoPagingSource @Inject constructor(
             val photoData = when (searchType) {
                 is SearchType.Tag -> flickrApiService.getImageBySearch(
                     tags = searchType.tags,
-                    tagMode = searchType.tagType.name
+                    tagMode = searchType.tagType.value
                 ).photoData
 
                 is SearchType.Term -> flickrApiService.getImageBySearch(searchText = searchType.searchTerm).photoData

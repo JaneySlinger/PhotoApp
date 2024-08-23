@@ -6,7 +6,7 @@ sealed class SearchType {
     data class Tag(val tags: String, val tagType: TagType) : SearchType()
 }
 
-enum class TagType {
-    ANY,
-    ALL,
+enum class TagType(val value: String) {
+    ANY(value = "any"),
+    ALL(value = "all"),
 }

@@ -3,6 +3,7 @@ package com.janey.photo.ui.homescreen
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,9 +18,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -45,6 +49,7 @@ import coil.request.ImageRequest
 import com.janey.photo.R
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
+import com.janey.photo.network.model.TagType
 import com.janey.photo.ui.theme.PhotoTheme
 import com.janey.photo.ui.theme.Typography
 import com.janey.photo.utils.formatProfileUrl
@@ -63,7 +68,7 @@ fun HomeScreen(
         photosPagingItems = photosPagingItems,
         searchTerm = state.value.searchTerm,
         onImageClicked = onImageClicked,
-        onNavigateClicked = {viewModel.handleEvent(HomeEvent.ImageClicked(it))},
+        onNavigateClicked = { viewModel.handleEvent(HomeEvent.ImageClicked(it)) },
         onSearchTermUpdated = {
             viewModel.handleEvent(
                 HomeEvent.SearchFieldUpdated(
@@ -79,6 +84,8 @@ fun HomeScreen(
                 )
             )
         },
+        tagType = state.value.tagType,
+        matchAllTagsChanged = { viewModel.handleEvent(HomeEvent.TagTypeChanged(it))},
         onSearchClicked = { viewModel.handleEvent(HomeEvent.SearchClicked) }
     )
 }
@@ -87,6 +94,8 @@ fun HomeScreen(
 fun HomeScreenContent(
     photosPagingItems: LazyPagingItems<Photo>?,
     searchTerm: String,
+    tagType: TagType,
+    matchAllTagsChanged: (Boolean) -> Unit,
     onImageClicked: (String) -> Unit,
     onNavigateClicked: (Photo) -> Unit,
     onSearchTermUpdated: (String) -> Unit,
@@ -111,6 +120,17 @@ fun HomeScreenContent(
                     focusManager.clearFocus()
                 }),
             )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
+            ) {
+                Text("Match all tags?", modifier = Modifier.weight(1f))
+                Switch(checked = tagType == TagType.ALL, onCheckedChange = matchAllTagsChanged)
+            }
+            HorizontalDivider()
+
 
             photosPagingItems?.let {
                 LazyColumn {
@@ -127,13 +147,19 @@ fun HomeScreenContent(
                         when {
                             loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading -> {
                                 item {
-                                    Text("Loading")
+                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        CircularProgressIndicator()
+                                    }
                                 }
                             }
 
                             loadState.refresh is LoadState.Error || loadState.append is LoadState.Error -> {
                                 item {
-                                    Text("Error")
+                                    Text(
+                                        "Something went wrong",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
                                 }
                             }
                         }
@@ -231,6 +257,8 @@ private fun HomeScreenPreview() {
             onUserClicked = { _, _ -> },
             photosPagingItems = null,
             onNavigateClicked = {},
+            tagType = TagType.ANY,
+            matchAllTagsChanged = {}
         )
     }
 }
@@ -265,7 +293,7 @@ private fun ImageItemPreview() {
                 ),
                 onImageClicked = {},
                 onNavigateClicked = {},
-                onUserClicked = {_, _ ->},
+                onUserClicked = { _, _ -> },
             )
         }
     }

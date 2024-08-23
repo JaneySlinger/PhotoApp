@@ -47,6 +47,7 @@ class HomeScreenViewModel @Inject constructor(
             }
 
             is HomeEvent.ImageClicked -> photoRepository.storePhoto(event.photo)
+            is HomeEvent.TagTypeChanged -> update(state.value.copy(tagType = if (event.allTagsSelected) TagType.ALL else TagType.ANY))
         }
     }
 
@@ -58,16 +59,16 @@ class HomeScreenViewModel @Inject constructor(
 
     @VisibleForTesting
     fun mapSearchTermToSearchType(term: String): SearchType? {
-        if(term.isBlank()) return null
+        if (term.isBlank()) return null
         // if it's a user search or a tag search it needs a value
-        if(term.length == 1 && (term == "@" || term == "#")) return null
+        if (term.length == 1 && (term == "@" || term == "#")) return null
 
         return if (term.first() == '@') {
             SearchType.User(term.drop(1))
         } else if (term.first() == '#') {
             SearchType.Tag(
                 tags = term.drop(1).replace(" ", "").split('#').joinToString(","),
-                tagType = TagType.ANY
+                tagType = state.value.tagType
             )
         } else {
             SearchType.Term(term)
@@ -77,7 +78,8 @@ class HomeScreenViewModel @Inject constructor(
 
 data class HomeState(
     val searchTerm: String = "Yorkshire",
-    val searchType: SearchType = SearchType.Term("Yorkshire")
+    val searchType: SearchType = SearchType.Term("Yorkshire"),
+    val tagType: TagType = TagType.ANY,
 )
 
 sealed class HomeEvent {
@@ -85,4 +87,5 @@ sealed class HomeEvent {
     data class UserClicked(val username: String, val userId: String) : HomeEvent()
     data object SearchClicked : HomeEvent()
     data class ImageClicked(val photo: Photo) : HomeEvent()
+    data class TagTypeChanged(val allTagsSelected: Boolean) : HomeEvent()
 }

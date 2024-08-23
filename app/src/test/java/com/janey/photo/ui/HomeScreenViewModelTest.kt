@@ -72,6 +72,18 @@ class HomeScreenViewModelTest {
     }
 
     @Test
+    fun `when view model loads, tag type is any`() {
+        assertEquals(TagType.ANY, sut.state.value.tagType)
+    }
+
+    @Test
+    fun `when tag type changed, tag type in state is updated`() {
+        sut.handleEvent(HomeEvent.TagTypeChanged(true))
+
+        assertEquals(TagType.ALL, sut.state.value.tagType)
+    }
+
+    @Test
     fun `test when map search called with term, term is returned`() {
         val result = sut.mapSearchTermToSearchType("term")
 
@@ -97,6 +109,14 @@ class HomeScreenViewModelTest {
         val result = sut.mapSearchTermToSearchType("#tag1 #tag2")
 
         assertEquals(SearchType.Tag("tag1,tag2", TagType.ANY), result)
+    }
+
+    @Test
+    fun `test when map search called with all tags mode, tag is returned`() {
+        sut.handleEvent(HomeEvent.TagTypeChanged(true))
+        val result = sut.mapSearchTermToSearchType("#tag1")
+
+        assertEquals(SearchType.Tag("tag1", TagType.ALL), result)
     }
 
     @Test
