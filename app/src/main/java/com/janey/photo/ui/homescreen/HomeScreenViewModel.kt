@@ -54,7 +54,6 @@ class HomeScreenViewModel @Inject constructor(
 }
 
 data class HomeState(
-    val photos: List<Photo> = listOf(),
     val searchTerm: String = "Yorkshire",
     val searchType: SearchType = SearchType.Term("Yorkshire")
 )

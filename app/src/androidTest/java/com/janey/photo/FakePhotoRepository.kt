@@ -1,56 +1,38 @@
 package com.janey.photo
 
+import androidx.paging.PagingSource
+import androidx.paging.testing.asPagingSourceFactory
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
-import com.janey.photo.network.model.PhotoData
 import com.janey.photo.network.model.SearchType
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 class FakePhotoRepository @Inject constructor() : PhotoRepository {
+    private val photos = listOf(
+        getSamplePhoto("Owner1"),
+        getSamplePhoto("Owner2"),
+    )
+
+    private val userPhotos = listOf(
+        getSamplePhoto("Owner1"),
+        getSamplePhoto("Owner1"),
+    )
+
     override suspend fun getPhotoById(id: String): Photo = getSamplePhoto()
 
-    private val photoFlow = MutableStateFlow<PhotoData?>(null)
-    override suspend fun searchPhotos(searchType: SearchType) {
-        when(searchType){
-            is SearchType.Term -> photoFlow.update {
-                PhotoData(
-                    photos = listOf(
-                        getSamplePhoto("Owner1"),
-                        getSamplePhoto("Owner2"),
-                    ),
-                    page = 9218,
-                    pages = 7801,
-                    perPage = 7284,
-                )
-            }
-            is SearchType.User -> photoFlow.update {
-                PhotoData(
-                    photos = listOf(
-                        getSamplePhoto(),
-                        getSamplePhoto(),
-                    ),
-                    page = 9218,
-                    pages = 7801,
-                    perPage = 7284,
-                )
-            }
-            else -> photoFlow.update {
-                PhotoData(
-                    photos = listOf(getSamplePhoto()),
-                    page = 9218,
-                    pages = 7801,
-                    perPage = 7284,
-                )
-            }
-        }
+    private val termPagingSourceFactory = photos.asPagingSourceFactory()
+    private val userPagingSourceFactory = userPhotos.asPagingSourceFactory()
+
+    override fun photoPagingSource(searchType: SearchType): PagingSource<Int, Photo> = when(searchType) {
+        is SearchType.Tag -> termPagingSourceFactory()
+        is SearchType.Term -> termPagingSourceFactory()
+        is SearchType.User -> userPagingSourceFactory()
     }
 
-    override fun subscribe(): Flow<PhotoData?> = photoFlow.asStateFlow()
+    override fun storePhoto(photo: Photo) {}
+
+    override fun clearCache() {}
 
     private fun getSamplePhoto(ownerName: String = "Owner1") = Photo(
         id = "1",
