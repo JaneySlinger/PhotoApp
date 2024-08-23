@@ -1,5 +1,6 @@
 package com.janey.photo.data
 
+import com.janey.photo.FakeFlickrApiServiceImpl
 import com.janey.photo.network.model.Description
 import com.janey.photo.network.model.Photo
 import org.junit.Assert.assertEquals
@@ -12,7 +13,9 @@ class PhotoRepositoryTest {
 
     @Before
     fun setup() {
-        sut = PhotoRepositoryImpl()
+        sut = PhotoRepositoryImpl(
+            FakeFlickrApiServiceImpl()
+        )
     }
 
     @Test

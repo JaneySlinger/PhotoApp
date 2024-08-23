@@ -2,21 +2,8 @@ package com.janey.photo.network
 
 import com.janey.photo.BuildConfig
 import com.janey.photo.network.model.FlickrSearchResponse
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-private val flickrImagesRetrofit = Retrofit.Builder()
-    .baseUrl("https://${BuildConfig.FLICKR_BASE_URL}")
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .build()
 
 interface FlickrApiService {
     @GET(".")
@@ -34,13 +21,5 @@ interface FlickrApiService {
         @Query("per_page") perPage: Int = 5,
         @Query("extras") extras : String = "tags,url_m,owner_name,icon_server,description,date_taken",
     ): FlickrSearchResponse
-}
-
-object FlickrApi {
-    val retrofitService: FlickrApiService by lazy {
-        flickrImagesRetrofit.create(
-            FlickrApiService::class.java
-        )
-    }
 }
 

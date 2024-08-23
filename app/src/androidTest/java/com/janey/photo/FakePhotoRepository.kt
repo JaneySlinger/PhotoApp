@@ -19,7 +19,7 @@ class FakePhotoRepository @Inject constructor() : PhotoRepository {
         getSamplePhoto("Owner1"),
     )
 
-    override suspend fun getPhotoById(id: String): Photo = getSamplePhoto()
+    override fun getPhotoById(id: String): Photo = getSamplePhoto()
 
     private val termPagingSourceFactory = photos.asPagingSourceFactory()
     private val userPagingSourceFactory = userPhotos.asPagingSourceFactory()

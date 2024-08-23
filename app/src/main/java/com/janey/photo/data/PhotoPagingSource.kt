@@ -3,12 +3,16 @@ package com.janey.photo.data
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import coil.network.HttpException
-import com.janey.photo.network.FlickrApi
+import com.janey.photo.network.FlickrApiService
 import com.janey.photo.network.model.Photo
 import com.janey.photo.network.model.SearchType
 import java.io.IOException
+import javax.inject.Inject
 
-class PhotoPagingSource(private val searchType: SearchType): PagingSource<Int, Photo>() {
+class PhotoPagingSource @Inject constructor(
+    private val searchType: SearchType,
+    private val flickrApiService: FlickrApiService,
+): PagingSource<Int, Photo>() {
     override fun getRefreshKey(state: PagingState<Int, Photo>): Int? {
         return state.anchorPosition
     }
@@ -17,13 +21,13 @@ class PhotoPagingSource(private val searchType: SearchType): PagingSource<Int, P
         return try {
             val currentPage = params.key ?: 1
             val photoData = when (searchType) {
-                is SearchType.Tag -> FlickrApi.retrofitService.getImageBySearch(
+                is SearchType.Tag -> flickrApiService.getImageBySearch(
                     tags = searchType.tags,
                     tagMode = searchType.tagType.name
                 ).photoData
 
-                is SearchType.Term -> FlickrApi.retrofitService.getImageBySearch(searchText = searchType.searchTerm).photoData
-                is SearchType.User -> FlickrApi.retrofitService.getImageBySearch(userId = searchType.userId).photoData
+                is SearchType.Term -> flickrApiService.getImageBySearch(searchText = searchType.searchTerm).photoData
+                is SearchType.User -> flickrApiService.getImageBySearch(userId = searchType.userId).photoData
             }
             val maxPages = photoData.pages
             val perPage = photoData.perPage
