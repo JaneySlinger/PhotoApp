@@ -2,6 +2,7 @@ package com.janey.photo.ui
 
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.SearchType
+import com.janey.photo.network.model.TagType
 import com.janey.photo.ui.homescreen.HomeEvent
 import com.janey.photo.ui.homescreen.HomeScreenViewModel
 import com.janey.photo.ui.homescreen.HomeState
@@ -68,5 +69,54 @@ class HomeScreenViewModelTest {
                 searchType = SearchType.User("userId")
             ), sut.state.value
         )
+    }
+
+    @Test
+    fun `test when map search called with term, term is returned`() {
+        val result = sut.mapSearchTermToSearchType("term")
+
+        assertEquals(SearchType.Term("term"), result)
+    }
+
+    @Test
+    fun `test when map search called with userId, user is returned`() {
+        val result = sut.mapSearchTermToSearchType("@userId")
+
+        assertEquals(SearchType.User("userId"), result)
+    }
+
+    @Test
+    fun `test when map search called with one tag, tag is returned`() {
+        val result = sut.mapSearchTermToSearchType("#tag1")
+
+        assertEquals(SearchType.Tag("tag1", TagType.ANY), result)
+    }
+
+    @Test
+    fun `test when map search called with multiple tags, tag is returned`() {
+        val result = sut.mapSearchTermToSearchType("#tag1 #tag2")
+
+        assertEquals(SearchType.Tag("tag1,tag2", TagType.ANY), result)
+    }
+
+    @Test
+    fun `test when map search called with blank value, null is returned`() {
+        val result = sut.mapSearchTermToSearchType("")
+
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun `test when map search called with blank # value, null is returned`() {
+        val result = sut.mapSearchTermToSearchType("#")
+
+        assertEquals(null, result)
+    }
+
+    @Test
+    fun `test when map search called with blank @ value, null is returned`() {
+        val result = sut.mapSearchTermToSearchType("@")
+
+        assertEquals(null, result)
     }
 }

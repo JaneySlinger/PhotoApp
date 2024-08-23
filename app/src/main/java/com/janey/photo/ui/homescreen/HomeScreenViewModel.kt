@@ -9,11 +9,13 @@ import androidx.paging.cachedIn
 import com.janey.photo.data.PhotoRepository
 import com.janey.photo.network.model.Photo
 import com.janey.photo.network.model.SearchType
+import com.janey.photo.network.model.TagType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,7 +39,7 @@ class HomeScreenViewModel @Inject constructor(
 
     fun handleEvent(event: HomeEvent) {
         when (event) {
-            HomeEvent.SearchClicked -> getPhotos(SearchType.Term(state.value.searchTerm))
+            HomeEvent.SearchClicked -> getPhotos(mapSearchTermToSearchType(state.value.searchTerm))
             is HomeEvent.SearchFieldUpdated -> update(state.value.copy(searchTerm = event.searchTerm))
             is HomeEvent.UserClicked -> {
                 update(state.value.copy(searchTerm = "@${event.username}"))
@@ -48,8 +50,28 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getPhotos(searchType: SearchType) {
-        update(state.value.copy(searchType = searchType))
+    private fun getPhotos(searchType: SearchType?) {
+        searchType?.let {
+            update(state.value.copy(searchType = searchType))
+        }
+    }
+
+    @VisibleForTesting
+    fun mapSearchTermToSearchType(term: String): SearchType? {
+        if(term.isBlank()) return null
+        // if it's a user search or a tag search it needs a value
+        if(term.length == 1 && (term == "@" || term == "#")) return null
+
+        return if (term.first() == '@') {
+            SearchType.User(term.drop(1))
+        } else if (term.first() == '#') {
+            SearchType.Tag(
+                tags = term.drop(1).replace(" ", "").split('#').joinToString(","),
+                tagType = TagType.ANY
+            )
+        } else {
+            SearchType.Term(term)
+        }
     }
 }
 
