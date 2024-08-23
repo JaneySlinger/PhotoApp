@@ -19,13 +19,19 @@ class FakePhotoRepository @Inject constructor() : PhotoRepository {
         getSamplePhoto("Owner1"),
     )
 
+    private val tagPhotos = listOf(
+        getSamplePhoto(tags = "dog"),
+        getSamplePhoto(tags = "dog"),
+    )
+
     override fun getPhotoById(id: String): Photo = getSamplePhoto()
 
     private val termPagingSourceFactory = photos.asPagingSourceFactory()
     private val userPagingSourceFactory = userPhotos.asPagingSourceFactory()
+    private val tagPagingSourceFactory = tagPhotos.asPagingSourceFactory()
 
     override fun photoPagingSource(searchType: SearchType): PagingSource<Int, Photo> = when(searchType) {
-        is SearchType.Tag -> termPagingSourceFactory()
+        is SearchType.Tag -> tagPagingSourceFactory()
         is SearchType.Term -> termPagingSourceFactory()
         is SearchType.User -> userPagingSourceFactory()
     }
@@ -34,13 +40,16 @@ class FakePhotoRepository @Inject constructor() : PhotoRepository {
 
     override fun clearCache() {}
 
-    private fun getSamplePhoto(ownerName: String = "Owner1") = Photo(
+    private fun getSamplePhoto(
+        ownerName: String = "Owner1",
+        tags: String = "tag1 tag2 tag3",
+    ) = Photo(
         id = "1",
         ownerId = "ownerId",
         ownerName = ownerName,
         iconServer = "server",
         iconFarm = 4598,
-        tags = "tag1 tag2 tag3",
+        tags = tags,
         photoUrl = "testUrl.jpg",
         title = "title",
         description = Description(contentDescription = "description"),
