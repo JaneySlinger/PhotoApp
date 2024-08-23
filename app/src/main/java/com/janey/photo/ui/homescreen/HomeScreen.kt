@@ -85,7 +85,7 @@ fun HomeScreen(
             )
         },
         tagType = state.value.tagType,
-        matchAllTagsChanged = { viewModel.handleEvent(HomeEvent.TagTypeChanged(it))},
+        matchAllTagsChanged = { viewModel.handleEvent(HomeEvent.TagTypeChanged(it)) },
         onSearchClicked = { viewModel.handleEvent(HomeEvent.SearchClicked) }
     )
 }
@@ -147,7 +147,10 @@ fun HomeScreenContent(
                         when {
                             loadState.refresh is LoadState.Loading || loadState.append is LoadState.Loading -> {
                                 item {
-                                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
                                         CircularProgressIndicator()
                                     }
                                 }

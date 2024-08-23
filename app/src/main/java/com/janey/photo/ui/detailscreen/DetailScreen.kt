@@ -101,10 +101,11 @@ fun DetailScreenContent(
                 Text(
                     description,
                     style = Typography.bodyLarge,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier
+                        .padding(top = 4.dp)
                         .fillMaxWidth()
                 )
-                if(tags.isNotBlank()) {
+                if (tags.isNotBlank()) {
                     Text(
                         tags.formatTags(),
                         style = Typography.bodyLarge,

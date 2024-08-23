@@ -29,7 +29,7 @@ class HomeScreenUITests {
     @Test
     fun testAppLoads() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onNodeWithTag(SEARCH_TAG).assertTextEquals("Yorkshire")
                 //results from both owners are present
                 onNodeWithText("Owner1").assertExists()
@@ -41,7 +41,7 @@ class HomeScreenUITests {
     @Test
     fun testWhenClickOnUser_UserImagesAreLoaded() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onNodeWithTag(SEARCH_TAG).assertTextEquals("Yorkshire")
                 //results from both owners are present
                 onNodeWithText("Owner1").assertExists()
@@ -60,7 +60,7 @@ class HomeScreenUITests {
     @Test
     fun testWhenPhotoClicked_NavigateToDetailPage() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onAllNodesWithTag(IMAGE_TAG).onFirst().performClick()
 
                 onNodeWithTag("DetailScreen").assertIsDisplayed()
@@ -76,7 +76,7 @@ class HomeScreenUITests {
     @Test
     fun testWhenUserIdSearched_UserResultsAreLoaded() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onNodeWithTag(SEARCH_TAG).assertTextEquals("Yorkshire")
                 //results from both owners are present
                 onNodeWithText("Owner1").assertExists()
@@ -95,7 +95,7 @@ class HomeScreenUITests {
     @Test
     fun testWhenTagSearched_TagResultsAreLoaded() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onNodeWithTag(SEARCH_TAG).assertTextEquals("Yorkshire")
                 onAllNodesWithText("#tag1 #tag2 #tag3").onFirst().assertExists()
 
@@ -112,7 +112,7 @@ class HomeScreenUITests {
     @Test
     fun testWhenInvalidTermSearched_ResultsStayTheSame() {
         ActivityScenario.launch(MainActivity::class.java).use {
-            composeTestRule.apply{
+            composeTestRule.apply {
                 onNodeWithTag(SEARCH_TAG).assertTextEquals("Yorkshire")
                 onAllNodesWithText("#tag1 #tag2 #tag3").onFirst().assertExists()
 
@@ -124,7 +124,6 @@ class HomeScreenUITests {
             }
         }
     }
-
 
 
     companion object {

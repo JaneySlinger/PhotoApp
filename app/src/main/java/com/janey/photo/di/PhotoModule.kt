@@ -13,5 +13,5 @@ import javax.inject.Singleton
 abstract class PhotoModule {
     @Binds
     @Singleton
-    abstract fun bindPhotoRepository(photoRepositoryImpl: PhotoRepositoryImpl) : PhotoRepository
+    abstract fun bindPhotoRepository(photoRepositoryImpl: PhotoRepositoryImpl): PhotoRepository
 }

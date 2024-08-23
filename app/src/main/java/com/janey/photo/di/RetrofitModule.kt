@@ -31,5 +31,6 @@ object RetrofitModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): FlickrApiService = retrofit.create(FlickrApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): FlickrApiService =
+        retrofit.create(FlickrApiService::class.java)
 }

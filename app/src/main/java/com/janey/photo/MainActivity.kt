@@ -36,12 +36,14 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding)
                             )
                         }
-                        composable(Screens.DETAIL.route,
+                        composable(
+                            Screens.DETAIL.route,
                             arguments = listOf(navArgument("id") { type = NavType.StringType })
                         ) {
                             DetailScreen(
                                 viewModel = hiltViewModel(),
-                                modifier = Modifier.padding(innerPadding))
+                                modifier = Modifier.padding(innerPadding)
+                            )
                         }
                     }
                 }

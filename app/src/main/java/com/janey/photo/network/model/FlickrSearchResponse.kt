@@ -10,7 +10,7 @@ data class FlickrSearchResponse(
 data class PhotoData(
     val page: Int,
     val pages: Int,
-    @Json(name="perpage")
+    @Json(name = "perpage")
     val perPage: Int,
     @Json(name = "photo")
     val photos: List<Photo>,
@@ -27,11 +27,11 @@ data class Photo(
     @Json(name = "iconfarm")
     val iconFarm: Int,
     val tags: String,
-    @Json(name="url_m")
+    @Json(name = "url_m")
     val photoUrl: String,
     val title: String,
     val description: Description,
-    @Json(name="datetaken")
+    @Json(name = "datetaken")
     val dateTaken: String,
 )
 

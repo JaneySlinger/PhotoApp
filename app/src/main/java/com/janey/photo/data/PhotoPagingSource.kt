@@ -12,7 +12,7 @@ import javax.inject.Inject
 class PhotoPagingSource @Inject constructor(
     private val searchType: SearchType,
     private val flickrApiService: FlickrApiService,
-): PagingSource<Int, Photo>() {
+) : PagingSource<Int, Photo>() {
     override fun getRefreshKey(state: PagingState<Int, Photo>): Int? {
         return state.anchorPosition
     }
@@ -34,8 +34,8 @@ class PhotoPagingSource @Inject constructor(
 
             LoadResult.Page(
                 data = photoData.photos,
-                prevKey = if(currentPage == 1) null else currentPage - 1,
-                nextKey = if(currentPage + perPage <= maxPages) currentPage + 1 else null
+                prevKey = if (currentPage == 1) null else currentPage - 1,
+                nextKey = if (currentPage + perPage <= maxPages) currentPage + 1 else null
             )
         } catch (exception: IOException) {
             return LoadResult.Error(exception)

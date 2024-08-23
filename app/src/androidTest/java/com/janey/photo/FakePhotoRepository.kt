@@ -30,11 +30,12 @@ class FakePhotoRepository @Inject constructor() : PhotoRepository {
     private val userPagingSourceFactory = userPhotos.asPagingSourceFactory()
     private val tagPagingSourceFactory = tagPhotos.asPagingSourceFactory()
 
-    override fun photoPagingSource(searchType: SearchType): PagingSource<Int, Photo> = when(searchType) {
-        is SearchType.Tag -> tagPagingSourceFactory()
-        is SearchType.Term -> termPagingSourceFactory()
-        is SearchType.User -> userPagingSourceFactory()
-    }
+    override fun photoPagingSource(searchType: SearchType): PagingSource<Int, Photo> =
+        when (searchType) {
+            is SearchType.Tag -> tagPagingSourceFactory()
+            is SearchType.Term -> termPagingSourceFactory()
+            is SearchType.User -> userPagingSourceFactory()
+        }
 
     override fun storePhoto(photo: Photo) {}
 
